@@ -1,0 +1,136 @@
+function H = gaussianLPF(M, N, D0, center)
+% GAUSSIANLPF 生成高斯低通滤波器
+% 输入:
+%   M, N   - 输出二维函数的大小（行数，列数）
+%   D0     - 截止频率
+%   center - 高斯函数中心 [uc, vc]（可选，默认居中）
+% 输出:
+%   H      - M x N 的高斯低通滤波器
+
+if nargin < 4 || isempty(center) 
+    center = [floor(M/2)+1, floor(N/2)+1]; % 默认中心
+end
+
+uc = center(1);
+vc = center(2);
+
+% 构建坐标网格
+[V, U] = meshgrid(1:N, 1:M);
+
+% 计算距离 D(u,v)
+D = sqrt((U - uc).^2 + (V - vc).^2);
+
+% 高斯低通滤波器公式 (4.3-7)
+H = exp(-(D.^2) / (2 * D0^2));
+
+end
+
+
+function H = gaussianHPF(M, N, D0, center)
+% GAUSSIANLPF 生成高斯高通滤波器
+% 输入:
+%   M, N   - 输出二维函数的大小（行数，列数）
+%   D0     - 截止频率
+%   center - 高斯函数中心 [uc, vc]（可选，默认居中）
+% 输出:
+%   H      - M x N 的高斯高通滤波器
+
+    if nargin < 4 || isempty(center) 
+        center = [floor(M/2)+1, floor(N/2)+1]; % 默认中心
+    end
+    
+    uc = center(1);
+    vc = center(2);
+    
+    % 构建坐标网格
+    [V, U] = meshgrid(1:N, 1:M);
+    
+    % 计算距离 D(u,v)
+    D = sqrt((U - uc).^2 + (V - vc).^2);
+    
+    % 高斯高通滤波器公式 (4.3-7)
+    H = 1 - exp(-(D.^2) / (2 * D0^2));
+
+end
+
+
+%F1 = imread("Fig0418(a).jpeg");
+
+%figure;
+%imshow(F1);
+
+f1 = imread("Fig0418(a).jpeg");
+
+if size(f1,3) == 3
+    f1 = rgb2gray(f1);  % 若为彩色，转灰度
+end
+f1 = im2double(f1);
+[M, N] = size(f1);
+
+%% 傅里叶变换并中心化
+F1 = fft2(f1);
+F1_shift = fftshift(F1);
+
+%% 生成高斯低通滤波器
+
+D0 = [15,30,80];
+%center = [floor(M/2)+1, floor(N/2)+1];
+H1 = gaussianLPF(M, N, D0(1));
+H2 = gaussianLPF(M, N, D0(2));
+H3 = gaussianLPF(M, N, D0(3));
+
+%% 生成高斯高通滤波器
+
+%center = [floor(M/2)+1, floor(N/2)+1];
+H4 = gaussianHPF(M, N, D0(1));
+H5 = gaussianHPF(M, N, D0(2));
+H6 = gaussianHPF(M, N, D0(3));
+
+%% 频域滤波
+G1_shift = F1_shift.* H1;
+G2_shift = F1_shift.* H2;
+G3_shift = F1_shift.* H3;
+
+%% 反变换
+G1 = ifftshift(G1_shift);
+g1 = real(ifft2(G1));
+sharped_g1 = f1 - g1;
+
+G2 = ifftshift(G2_shift);
+g2 = real(ifft2(G2));
+sharped_g2 = f1 - g2;
+
+G3 = ifftshift(G3_shift);
+g3 = real(ifft2(G3));
+sharped_g3 = f1 - g3;
+
+%% 显示结果
+figure;
+subplot(2,2,1); imshow(f1, []); title('原始图像 (Fig. 4.11(a))');
+subplot(2,2,2); imshow(sharped_g1, []); title(sprintf('高斯低通滤波锐化 D_0=%d (Fig. 4.18(c))', D0(1)));
+subplot(2,2,3); imshow(sharped_g2, []); title(sprintf('高斯低通滤波锐化 D_0=%d (Fig. 4.18(c))', D0(2)));
+subplot(2,2,4); imshow(sharped_g3, []); title(sprintf('高斯低通滤波锐化 D_0=%d (Fig. 4.18(c))', D0(3)));
+
+
+%% 频域滤波
+G4_shift = F1_shift.* H4;
+G5_shift = F1_shift.* H5;
+G6_shift = F1_shift.* H6;
+
+%% 反变换
+G4 = ifftshift(G4_shift);
+g4 = real(ifft2(G4));
+
+G5 = ifftshift(G5_shift);
+g5 = real(ifft2(G5));
+
+G6 = ifftshift(G6_shift);
+g6 = real(ifft2(G6));
+
+
+%% 显示结果
+figure;
+subplot(2,2,1); imshow(f1, []); title('原始图像 (Fig. 4.11(a))');
+subplot(2,2,2); imshow(g4, []); title(sprintf('高斯高通滤波 D_0=%d (Fig. 4.18(c))', D0(1)));
+subplot(2,2,3); imshow(g5, []); title(sprintf('高斯高通滤波 D_0=%d (Fig. 4.18(c))', D0(2)));
+subplot(2,2,4); imshow(g6, []); title(sprintf('高斯高通滤波 D_0=%d (Fig. 4.18(c))', D0(3)));

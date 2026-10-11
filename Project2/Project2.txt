@@ -1,0 +1,42 @@
+第二次project，范围为【04-03，04-04，04-05】。10月14日（包含）前发送到163邮箱（见project要求）。题目涉及的图片以及公式，
+
+●project 4-3
+○The Gaussian lowpass filter 的公式详见教材和老师ppt的公式，老师课上讲过了。
+○Fig. 4.11(a) = Fig. 4.18(a) 
+○Fig. 4.18(c)
+
+
+
+PROJECT 04-03
+	Lowpass Filtering
+(a) Implement the Gaussian lowpass filter in Eq. (4.3-7). You must be able to specify the size, M * N, of the resulting 2D funciton. In addition, you must be able to specify where the 2D location of the center of the Gaussian function.
+
+(b) Download Fig. 4.11(a) [this image is the same as Fig 4.18(a)] and lowpass filter it to obtain Fig. 4.18(c).
+
+PROJECT 04-04
+	Highpass Filtering Using a Lowpass Image
+(a) Subtract your image in Project 04-03(b) from the original to obtain a sharpened image, as in Eq.(4.4 - 14). Yow will note that the resulting image does not resemble the Gaussian highpass results Fig. 4.26. Explain why this is so.
+
+(b) Adjust the variance of your Gaussian lowpass filter until the result obtained by image subtraction looks similar to Fig. 4.26(c). Explain your result.
+
+PROJECT 04-05
+	Correlation in the Frequency Domain
+Download Figs. 4.41(a) and (b) and duplicate Example 4.11 to obtain Fig 4.41(e). Give the (x,y) coordinates of the loaction of the maximum value in the 2D correlation function. There is no need to plot the profile in Fig. 4.41(f).
+
+
+项目 04-03
+     低通滤波
+(a) 实现式(4.3-7)中的高斯低通滤波器。你必须能够指定所得二维函数的大小M * N。此外，你还必须能够指定高斯函数中心的二维位置。
+
+(b) 下载图4.11(a)[该图像与图4.18(a)相同]，并对其进行低通滤波以获得图4.18(c)。
+
+项目 04-04
+     使用低通图像进行高通滤波
+(a) 从原始图像中减去你在项目04-03(b)中得到的图像，以获得锐化图像，如式(4.4-14)所示。你会注意到，所得图像并不像高斯高通结果图4.26。解释为什么会这样。
+
+
+(b) 调整高斯低通滤波器的方差，直到通过图像相减得到的结果看起来与图4.26(c)相似。解释你的结果。
+
+项目 04-05
+     频域中的相关
+下载图4.41(a)和(b)，并复现例4.11以获得图4.41(e)。给出二维相关函数中最大值位置的(x,y)坐标。无需绘制图4.41(f)中的剖面图。

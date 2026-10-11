@@ -1,0 +1,69 @@
+function H = gaussianLPF(M, N, D0, center)
+% GAUSSIANLPF 生成高斯低通滤波器
+% 输入:
+%   M, N   - 输出二维函数的大小（行数，列数）
+%   D0     - 截止频率
+%   center - 高斯函数中心 [uc, vc]（可选，默认居中）
+% 输出:
+%   H      - M x N 的高斯低通滤波器
+
+    if nargin < 4 || isempty(center) 
+        center = [floor(M/2)+1, floor(N/2)+1]; % 默认中心
+    end
+    
+    uc = center(1);
+    vc = center(2);
+
+    % 构建坐标网格
+    [V, U] = meshgrid(1:N, 1:M);
+
+    % 计算距离 D(u,v)
+    D = sqrt((U - uc).^2 + (V - vc).^2);
+
+    % 高斯低通滤波器公式 (4.3-7)
+    H = exp(-(D.^2) / (2 * D0^2));
+
+end
+
+
+
+%F1 = imread("Fig0418(a).jpeg");
+
+%figure;
+%imshow(F1);
+
+f1 = imread("Fig0418(a).jpeg");
+
+if size(f1,3) == 3
+    f1 = rgb2gray(f1);  % 若为彩色，转灰度
+end
+f1 = im2double(f1);
+[M, N] = size(f1);
+
+%% 傅里叶变换并中心化
+F1 = fft2(f1);
+F1_shift = fftshift(F1);
+F1_shift_log = log(1 + abs(F1_shift));
+
+%% 生成高斯低通滤波器
+
+D0 = 30;
+%center = [floor(M/2)+1, floor(N/2)+1];
+H = gaussianLPF(M, N, D0);
+
+%% 频域滤波
+G1_shift = F1_shift.* H;
+G1_shift_log = log(1 + abs(G1_shift));
+
+%% 反变换
+G1 = ifftshift(G1_shift);
+g1 = real(ifft2(G1));
+
+%% 显示结果
+figure;
+subplot(1,2,1); imshow(F1_shift_log, []); title('中心化并对数变换后的频域图');
+subplot(1,2,2); imshow(G1_shift_log, []); title('低通滤波后的频域图');
+
+figure;
+subplot(1,2,1); imshow(f1, []); title('原始图像 (Fig. 4.11(a))');
+subplot(1,2,2); imshow(g1, []); title(sprintf('高斯低通滤波 D_0=%d (Fig. 4.18(c))', D0));
